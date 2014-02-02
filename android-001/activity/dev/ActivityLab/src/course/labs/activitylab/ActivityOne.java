@@ -26,11 +26,17 @@ public class ActivityOne extends Activity {
 	// onResume(), called mCreate, etc.
 	// You will need to increment these variables' values when their
 	// corresponding lifecycle methods get called
-
-
+	int mCreate = 0;
+	int mRestart = 0;
+	int mStart = 0;
+	int mResume = 0;
 
 	// TODO: Create variables for each of the TextViews, called
         // mTvCreate, etc. 
+	TextView mTvCreate = null;
+	TextView mTvRestart = null;
+	TextView mTvStart = null;
+	TextView mTvResume = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +46,10 @@ public class ActivityOne extends Activity {
 		// TODO: Assign the appropriate TextViews to the TextView variables
 		// Hint: Access the TextView by calling Activity's findViewById()
 		// textView1 = (TextView) findViewById(R.id.textView1);
-
-
-
-
+		mTvCreate = (TextView) findViewById(R.id.create);
+		mTvRestart = (TextView) findViewById(R.id.restart);
+		mTvStart = (TextView) findViewById(R.id.start);
+		mTvResume = (TextView) findViewById(R.id.resume);
 
 		Button launchActivityTwoButton = (Button) findViewById(R.id.bLaunchActivityTwo); 
 		launchActivityTwoButton.setOnClickListener(new OnClickListener() {
@@ -55,10 +61,10 @@ public class ActivityOne extends Activity {
 				// Hint: use Context's startActivity() method
 
 				// Create an intent stating which Activity you would like to start
-
+				Intent intent = new Intent(getApplicationContext(), ActivityTwo.class);
 				
 				// Launch the Activity using the intent
-
+				startActivity(intent);
 			
 			}
 		});
@@ -74,12 +80,13 @@ public class ActivityOne extends Activity {
 		}
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onCreate() method.");
 
 		// TODO:
 		// Update the appropriate count variable
 		// Update the user interface via the displayCounts() method
-
+		mCreate++;
+		displayCounts();
 
 
 	}
@@ -91,12 +98,13 @@ public class ActivityOne extends Activity {
 		super.onStart();
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onStart() method.");
 
 		// TODO:
 		// Update the appropriate count variable
 		// Update the user interface
-
+		mStart++;
+		displayCounts();
 
 	}
 
@@ -105,12 +113,13 @@ public class ActivityOne extends Activity {
 		super.onResume();
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onResume() method.");
 
 		// TODO:
 		// Update the appropriate count variable
 		// Update the user interface
-
+		mResume++;
+		displayCounts();
 
 	}
 
@@ -119,6 +128,7 @@ public class ActivityOne extends Activity {
 		super.onPause();
 
 		// TODO: Emit LogCat message
+		Log.i(TAG, "Entered the onPause() method.");
 
 	}
 
@@ -127,7 +137,7 @@ public class ActivityOne extends Activity {
 		super.onStop();
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onStop() method.");
 	}
 
 	@Override
@@ -135,11 +145,13 @@ public class ActivityOne extends Activity {
 		super.onRestart();
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onRestart() method.");
 
 		// TODO:
 		// Update the appropriate count variable
 		// Update the user interface
+		mRestart++;
+		displayCounts();
 
 
 
@@ -150,7 +162,7 @@ public class ActivityOne extends Activity {
 		super.onDestroy();
 
 		// TODO: Emit LogCat message
-
+		Log.i(TAG, "Entered the onDestroy() method.");
 
 	}
 
