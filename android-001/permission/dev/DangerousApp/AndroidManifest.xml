@@ -14,6 +14,8 @@
     		  "course.labs.permissions.DANGEROUS_ACTIVITY_PERM" 
           and "dangerous" protection level.
     -->
+	<permission android:name="course.labs.permissions.DANGEROUS_ACTIVITY_PERM"
+	    android:protectionLevel="dangerous" />
 
     <application
         android:allowBackup="true"
@@ -32,6 +34,12 @@
                   will respond to an Implicit Intent with the action
                   "course.labs.permissions.DANGEROUS_ACTIVITY"
             -->
+            
+            <intent-filter>
+                <action android:name="course.labs.permissions.DANGEROUS_ACTIVITY" />
+                
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
 
 
             <intent-filter>
