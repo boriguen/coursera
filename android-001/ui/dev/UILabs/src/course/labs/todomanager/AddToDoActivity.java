@@ -24,7 +24,7 @@ import course.labs.todomanager.ToDoItem.Priority;
 import course.labs.todomanager.ToDoItem.Status;
 
 public class AddToDoActivity extends Activity {
-	
+
 	// 7 days in milliseconds - 7 * 24 * 60 * 60 * 1000
 	private static final int SEVEN_DAYS = 604800000;
 
@@ -35,7 +35,6 @@ public class AddToDoActivity extends Activity {
 	private static TextView dateView;
 	private static TextView timeView;
 
-	
 	private Date mDate;
 	private RadioGroup mPriorityRadioGroup;
 	private RadioGroup mStatusRadioGroup;
@@ -60,7 +59,8 @@ public class AddToDoActivity extends Activity {
 
 		setDefaultDateTime();
 
-		// OnClickListener for the Date button, calls showDatePickerDialog() to show
+		// OnClickListener for the Date button, calls showDatePickerDialog() to
+		// show
 		// the Date dialog
 
 		final Button datePickerButton = (Button) findViewById(R.id.date_picker_button);
@@ -72,7 +72,8 @@ public class AddToDoActivity extends Activity {
 			}
 		});
 
-		// OnClickListener for the Time button, calls showTimePickerDialog() to show
+		// OnClickListener for the Time button, calls showTimePickerDialog() to
+		// show
 		// the Time Dialog
 
 		final Button timePickerButton = (Button) findViewById(R.id.time_picker_button);
@@ -84,7 +85,7 @@ public class AddToDoActivity extends Activity {
 			}
 		});
 
-		// OnClickListener for the Cancel Button, 
+		// OnClickListener for the Cancel Button,
 
 		final Button cancelButton = (Button) findViewById(R.id.cancelButton);
 		cancelButton.setOnClickListener(new OnClickListener() {
@@ -92,12 +93,13 @@ public class AddToDoActivity extends Activity {
 			public void onClick(View v) {
 				log("Entered cancelButton.OnClickListener.onClick()");
 
-				//TODO - Implement onClick().  
-
+				// TODO - Implement onClick().
+				setResult(RESULT_CANCELED);
+				finish();
 			}
 		});
 
-		//OnClickListener for the Reset Button
+		// OnClickListener for the Reset Button
 
 		final Button resetButton = (Button) findViewById(R.id.resetButton);
 		resetButton.setOnClickListener(new OnClickListener() {
@@ -105,55 +107,54 @@ public class AddToDoActivity extends Activity {
 			public void onClick(View v) {
 				log("Entered resetButton.OnClickListener.onClick()");
 
-				//TODO - Reset data fields to default values
-				
+				// TODO - Reset data fields to default values
+				mTitleText.setText("");
+				mPriorityRadioGroup.check(mDefaultPriorityButton.getId());
+				mStatusRadioGroup.check(mDefaultStatusButton.getId());
+				setDefaultDateTime();
 
-			
-			
-			
 			}
 		});
 
 		// OnClickListener for the Submit Button
 		// Implement onClick().
-		
+
 		final Button submitButton = (Button) findViewById(R.id.submitButton);
 		submitButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				log("Entered submitButton.OnClickListener.onClick()");
 
-				// Gather ToDoItem data  
-				
-				//TODO - Get Priority
-				Priority priority = null;
+				// Gather ToDoItem data
 
-				//TODO -  Get Status
-				Status status = null;
+				// TODO - Get Priority
+				Priority priority = getPriority();
 
-				//TODO -  Title
-				String titleString = null;
+				// TODO - Get Status
+				Status status = getStatus();
+
+				// TODO - Title
+				String titleString = mTitleText.getText().toString();
 
 				// Date
 				String fullDate = dateString + " " + timeString;
 
 				// Package ToDoItem data into an Intent
 				Intent data = new Intent();
-				ToDoItem.packageIntent(data, titleString, priority, status, fullDate);
+				ToDoItem.packageIntent(data, titleString, priority, status,
+						fullDate);
 
-				//TODO - return data Intent and finish
-				
-
-				
-				
+				// TODO - return data Intent and finish
+				setResult(RESULT_OK, data);
+				finish();
 			}
 		});
 	}
 
 	// Do not modify below here
-	
+
 	// Use this method to set the default date and time
-	
+
 	private void setDefaultDateTime() {
 
 		// Default is current time + 7 days
@@ -271,8 +272,7 @@ public class AddToDoActivity extends Activity {
 			int minute = c.get(Calendar.MINUTE);
 
 			// Create a new instance of TimePickerDialog and return
-			return new TimePickerDialog(getActivity(), this, hour, minute,
-					true);
+			return new TimePickerDialog(getActivity(), this, hour, minute, true);
 		}
 
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
