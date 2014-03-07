@@ -30,7 +30,7 @@ public class BubbleActivity extends Activity {
 	private final static int RANDOM = 0;
 	private final static int SINGLE = 1;
 	private final static int STILL = 2;
-	private static int speedMode = RANDOM;
+	private static int speedMode = STILL;
 
 	private static final int MENU_STILL = Menu.FIRST;
 	private static final int MENU_SINGLE_SPEED = Menu.FIRST + 1;
@@ -158,7 +158,7 @@ public class BubbleActivity extends Activity {
 				BubbleView bubbleView = null;
 				int max = mFrame.getChildCount();
 				for (int i = 0; i < max && bubbleView == null; i++) {
-					BubbleView current = (BubbleView)mFrame.getChildAt(i);
+					BubbleView current = (BubbleView) mFrame.getChildAt(i);
 					if (current.intersects(x, y)) {
 						bubbleView = current;
 					}
@@ -191,14 +191,8 @@ public class BubbleActivity extends Activity {
 	protected void onPause() {
 		
 		// TODO - Release all SoundPool resources
-
-
-		
-		
-		
-		
-		
-		
+		mSoundPool.release();
+		mSoundPool = null;
 		
 		super.onPause();
 	}
@@ -284,8 +278,8 @@ public class BubbleActivity extends Activity {
 				// TODO - Set movement direction and speed
 				// Limit movement speed in the x and y
 				// direction to [-3..3].
-				mDx = ((r.nextInt(Short.MAX_VALUE - Short.MIN_VALUE) + Short.MIN_VALUE) % 4);
-				mDy = ((r.nextInt(Short.MAX_VALUE - Short.MIN_VALUE) + Short.MIN_VALUE) % 4);
+				mDx = r.nextInt(7) - 3;
+				mDy = r.nextInt(7) - 3;
 				break;		
 			}
 		}
@@ -294,12 +288,12 @@ public class BubbleActivity extends Activity {
 
 			if (speedMode != RANDOM) {
 
-				mScaledBitmapWidth = BITMAP_SIZE * 3;
+				mScaledBitmapWidth = BITMAP_SIZE * 2;
 			
 			} else {
 			
 				//TODO - set scaled bitmap size in range [1..3] * BITMAP_SIZE
-				mScaledBitmapWidth = BITMAP_SIZE * (r.nextInt(3) + 1);
+				mScaledBitmapWidth = BITMAP_SIZE * (r.nextInt(2) + 1);
 			
 			}
 
@@ -349,8 +343,9 @@ public class BubbleActivity extends Activity {
 		private synchronized boolean intersects(float x, float y) {
 
 			// TODO - Return true if the BubbleView intersects position (x,y)
-			return Math.pow(x - mXPos, 2) + Math.pow(y - mYPos, 2) <= Math.pow(
-					mScaledBitmapWidth / 2, 2);
+			double squareDistance = Math.pow(mXPos - x, 2) + Math.pow(mYPos - y, 2);
+			double squareRadius = Math.pow(mScaledBitmapWidth / 2, 2); 
+			return squareDistance <= squareRadius;
 		}
 
 		// Cancel the Bubble's movement
@@ -362,14 +357,13 @@ public class BubbleActivity extends Activity {
 			if (null != mMoverFuture && mMoverFuture.cancel(true)) {
 
 				// This work will be performed on the UI Thread
-				final BubbleView that = this;
+
 				mFrame.post(new Runnable() {
 					@Override
 					public void run() {
 						
 						// TODO - Remove the BubbleView from mFrame
-						mFrame.removeView(that);
-						
+						mFrame.removeView(BubbleView.this);
 						
 						if (popped) {
 							log("Pop!");
@@ -428,19 +422,18 @@ public class BubbleActivity extends Activity {
 
 			// TODO - Move the BubbleView
 			// Returns true if the BubbleView has exited the screen
-			mXPos += mDx;
-			mYPos += mDy;
-			deflect(mDx, mDy);
+			mXPos += mDx * REFRESH_RATE;
+			mYPos += mDy * REFRESH_RATE;
 			
 			return isOutOfView();
 
 		}
 
 		private boolean isOutOfView() {
+			boolean xOutOfView = mXPos < 0 || mXPos > mDisplayWidth;
+			boolean yOutOfView = mYPos < 0 || mYPos > mDisplayHeight;
 
-			// TODO - Return true if the BubbleView has exited the screen
-
-			return false;
+			return xOutOfView || yOutOfView;
 
 		}
 	}
