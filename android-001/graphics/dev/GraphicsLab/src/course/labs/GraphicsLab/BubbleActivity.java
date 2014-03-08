@@ -30,7 +30,7 @@ public class BubbleActivity extends Activity {
 	private final static int RANDOM = 0;
 	private final static int SINGLE = 1;
 	private final static int STILL = 2;
-	private static int speedMode = STILL;
+	private static int speedMode = RANDOM;
 
 	private static final int MENU_STILL = Menu.FIRST;
 	private static final int MENU_SINGLE_SPEED = Menu.FIRST + 1;
@@ -134,11 +134,17 @@ public class BubbleActivity extends Activity {
 				// TODO - Implement onFling actions.
 				// You can get all Views in mFrame using the
 				// ViewGroup.getChildCount() method
-
+				float x = event1.getX();
+				float y = event1.getY();
 				
+				BubbleView bubbleView = getTappedBubble(x, y);
 				
+				if (bubbleView != null) {
+					bubbleView.deflect(velocityX, velocityY);
+					bubbleView.invalidate();
+				}
 				
-				return false;
+				return bubbleView != null;
 				
 			}
 
@@ -155,14 +161,7 @@ public class BubbleActivity extends Activity {
 				float x = event.getX();
 				float y = event.getY();
 				
-				BubbleView bubbleView = null;
-				int max = mFrame.getChildCount();
-				for (int i = 0; i < max && bubbleView == null; i++) {
-					BubbleView current = (BubbleView) mFrame.getChildAt(i);
-					if (current.intersects(x, y)) {
-						bubbleView = current;
-					}
-				}
+				BubbleView bubbleView = getTappedBubble(x, y);
 				
 				if (bubbleView != null) {
 					bubbleView.stop(true);
@@ -174,6 +173,18 @@ public class BubbleActivity extends Activity {
 				
 				return true;
 			}
+			
+			private BubbleView getTappedBubble(float x, float y) {
+				BubbleView bubbleView = null;
+				int max = mFrame.getChildCount();
+				for (int i = 0; i < max && bubbleView == null; i++) {
+					BubbleView current = (BubbleView) mFrame.getChildAt(i);
+					if (current.intersects(x, y)) {
+						bubbleView = current;
+					}
+				}
+				return bubbleView;
+			}
 		});
 	}
 
@@ -181,9 +192,8 @@ public class BubbleActivity extends Activity {
 	public boolean onTouchEvent(MotionEvent event) {
 
 		// TODO - delegate the touch to the gestureDetector 
-		mGestureDetector.onTouchEvent(event);
 		
-		return false;
+		return mGestureDetector.onTouchEvent(event);
 	
 	}
 
@@ -343,9 +353,10 @@ public class BubbleActivity extends Activity {
 		private synchronized boolean intersects(float x, float y) {
 
 			// TODO - Return true if the BubbleView intersects position (x,y)
-			double squareDistance = Math.pow(mXPos - x, 2) + Math.pow(mYPos - y, 2);
-			double squareRadius = Math.pow(mScaledBitmapWidth / 2, 2); 
-			return squareDistance <= squareRadius;
+			int radius = mScaledBitmapWidth / 2;
+			double centerX = mXPos + radius;
+			double centerY = mYPos + radius;
+			return Math.hypot(centerX - (double) x, centerY - (double) y) < radius;
 		}
 
 		// Cancel the Bubble's movement
@@ -364,13 +375,13 @@ public class BubbleActivity extends Activity {
 						
 						// TODO - Remove the BubbleView from mFrame
 						mFrame.removeView(BubbleView.this);
-						
+						mFrame.invalidate();
 						if (popped) {
 							log("Pop!");
 
 							// TODO - If the bubble was popped by user,
 							// play the popping sound
-							mSoundPool.play(mSoundID, 1, 1, 0, 0, 1);
+							mSoundPool.play(mSoundID, mStreamVolume, mStreamVolume, 1, 0, 1);
 						
 						}
 
@@ -404,7 +415,8 @@ public class BubbleActivity extends Activity {
 
 			
 			// TODO Rotate the canvas by current rotation
-			canvas.rotate(mRotate);
+			canvas.rotate(mRotate, mXPos + mScaledBitmapWidth / 2, mYPos
+					+ mScaledBitmapWidth / 2);
 			
 			
 			// TODO - draw the bitmap at it's new location
@@ -430,8 +442,11 @@ public class BubbleActivity extends Activity {
 		}
 
 		private boolean isOutOfView() {
-			boolean xOutOfView = mXPos < 0 || mXPos > mDisplayWidth;
-			boolean yOutOfView = mYPos < 0 || mYPos > mDisplayHeight;
+			float radius = mScaledBitmapWidth / 2;
+			boolean xOutOfView = (mXPos + radius) < 0 || 
+					(mXPos - radius) > mDisplayWidth;
+			boolean yOutOfView = (mYPos + radius) < 0 || 
+					(mYPos - radius) > mDisplayHeight;
 
 			return xOutOfView || yOutOfView;
 
@@ -469,11 +484,11 @@ public class BubbleActivity extends Activity {
 	}
 	
 	private static void log (String message) {
-		try {
+		/*try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 		Log.i(TAG,message);
 	}
 }
