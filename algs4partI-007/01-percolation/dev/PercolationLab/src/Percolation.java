@@ -112,7 +112,7 @@ public class Percolation {
 	/**
 	 * Prints the current state of the system to the console.
 	 */
-	public void printSystem() {
+	private void printSystem() {
 		System.out.println("\n\nCurrent percolation system state:");
 		System.out.print(this.grid[0]);
 		for (int i = 1; i < this.grid.length; i++) {

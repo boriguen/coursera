@@ -19,7 +19,7 @@ public class PercolationStats {
 					"The program should only contain N and T");
 		}
 
-		Stopwatch stopWatch = new Stopwatch();
+		//Stopwatch stopWatch = new Stopwatch();
 		
 		// Compute stats.
 		int N = Integer.parseInt(args[0]);
@@ -35,8 +35,8 @@ public class PercolationStats {
 				percolationStats.confidenceLo(),
 				percolationStats.confidenceHi());
 		
-		System.out.printf("\n\nTotal execution time for N = %d and T = %d is %f seconds",
-				N, T, stopWatch.elapsedTime());
+		/*System.out.printf("\n\nTotal execution time for N = %d and T = %d is %f seconds",
+				N, T, stopWatch.elapsedTime());*/
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class PercolationStats {
 	 * @return Integer between min and max, inclusive.
 	 * @see java.util.Random#nextInt(int)
 	 */
-	public static int randInt(Random random, int min, int max) {
+	private static int randInt(Random random, int min, int max) {
 		// nextInt is normally exclusive of the top value,
 		// so add 1 to make it inclusive
 		int randomNum = random.nextInt((max - min) + 1) + min;
