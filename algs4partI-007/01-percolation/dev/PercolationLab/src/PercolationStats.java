@@ -10,6 +10,28 @@ import java.util.Random;
  */
 public class PercolationStats {
 
+	private double[] percolationSiteCounts = null;
+
+	/**
+	 * Performs T independent experiments on an N-by-N grid.
+	 * 
+	 * @param N
+	 * @param T
+	 */
+	public PercolationStats(int N, int T) {
+		if (N <= 0) {
+			throw new IllegalArgumentException("N should be greater than 0");
+		}
+
+		if (T <= 0) {
+			throw new IllegalArgumentException("T should be greater than 0");
+		}
+
+		// Perform experiments.
+		percolationSiteCounts = new double[T];
+		performExperiments(N, T);
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -37,48 +59,6 @@ public class PercolationStats {
 		
 		/*System.out.printf("\n\nTotal execution time for N = %d and T = %d is %f seconds",
 				N, T, stopWatch.elapsedTime());*/
-	}
-	
-	/**
-	 * Returns a pseudo-random number between min and max, inclusive. The
-	 * difference between min and max can be at most
-	 * <code>Integer.MAX_VALUE - 1</code>.
-	 *
-	 * @param min
-	 *            Minimum value
-	 * @param max
-	 *            Maximum value. Must be greater than min.
-	 * @return Integer between min and max, inclusive.
-	 * @see java.util.Random#nextInt(int)
-	 */
-	private static int randInt(Random random, int min, int max) {
-		// nextInt is normally exclusive of the top value,
-		// so add 1 to make it inclusive
-		int randomNum = random.nextInt((max - min) + 1) + min;
-
-		return randomNum;
-	}
-
-	private double[] percolationSiteCounts = null;
-
-	/**
-	 * Performs T independent experiments on an N-by-N grid.
-	 * 
-	 * @param N
-	 * @param T
-	 */
-	public PercolationStats(int N, int T) {
-		if (N <= 0) {
-			throw new IllegalArgumentException("N should be greater than 0");
-		}
-
-		if (T <= 0) {
-			throw new IllegalArgumentException("T should be greater than 0");
-		}
-
-		// Perform experiments.
-		percolationSiteCounts = new double[T];
-		performExperiments(N, T);
 	}
 
 	/**
@@ -115,6 +95,26 @@ public class PercolationStats {
 	 */
 	public double confidenceHi() {
 		return mean() + 0.95 * stddev();
+	}
+	
+	/**
+	 * Returns a pseudo-random number between min and max, inclusive. The
+	 * difference between min and max can be at most
+	 * <code>Integer.MAX_VALUE - 1</code>.
+	 *
+	 * @param min
+	 *            Minimum value
+	 * @param max
+	 *            Maximum value. Must be greater than min.
+	 * @return Integer between min and max, inclusive.
+	 * @see java.util.Random#nextInt(int)
+	 */
+	private static int randInt(Random random, int min, int max) {
+		// nextInt is normally exclusive of the top value,
+		// so add 1 to make it inclusive
+		int randomNum = random.nextInt((max - min) + 1) + min;
+
+		return randomNum;
 	}
 
 	/**
@@ -156,8 +156,6 @@ public class PercolationStats {
 		} while (!percolation.percolates() && count < maxSites);
 
 		double threshold = (double) count / (double) maxSites;
-		//System.out.printf("\nN = %d, Count = %d, Threshold = %f", 
-		//		maxSites, count, threshold);
 		
 		return threshold;
 	}

@@ -8,14 +8,6 @@
  *
  */
 public class Percolation {
-
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
 	
 	private int N = 0;
 	private int[] grid = null;
@@ -38,7 +30,7 @@ public class Percolation {
 			this.grid[i] = 0;
 		}
 		
-		initWeightedQuickUnion(N);
+		initWeightedQuickUnion();
 	}
 	
 	/**
@@ -52,6 +44,12 @@ public class Percolation {
 		if (this.grid[unifiedIndex] != 1) {
 			// Open site.
 			this.grid[unifiedIndex] = 1;
+			
+			if (i == 1) {
+				this.weightedQuickUnionUF.union(this.virtualTopSiteIndex, unifiedIndex);
+			} else if (i == N) {
+				this.weightedQuickUnionUF.union(this.virtualBottomSiteIndex, unifiedIndex);
+			}
 			
 			// Union between neighboring sites as applicable.
 			trySiteUnion(unifiedIndex, i-1, j); // Top.
@@ -72,15 +70,6 @@ public class Percolation {
 	}
 	
 	/**
-	 * Is site (unifiedIndex) open?
-	 * @param unifiedIndex
-	 * @return
-	 */
-	private boolean isOpen(int unifiedIndex) {
-		return this.grid[unifiedIndex] == 1;
-	}
-	
-	/**
 	 * Is site (row i, column j) full?
 	 * @param i
 	 * @param j
@@ -91,6 +80,24 @@ public class Percolation {
 	}
 	
 	/**
+	 * Does the system percolate?
+	 * @return
+	 */
+	public boolean percolates() {
+		return this.weightedQuickUnionUF.connected(this.virtualTopSiteIndex, 
+				this.virtualBottomSiteIndex);
+	}
+	
+	/**
+	 * Is site (unifiedIndex) open?
+	 * @param unifiedIndex
+	 * @return
+	 */
+	private boolean isOpen(int unifiedIndex) {
+		return this.grid[unifiedIndex] == 1;
+	}
+	
+	/**
 	 * Is site (unifiedIndex) full?
 	 * @param unifiedIndex
 	 * @return
@@ -98,15 +105,6 @@ public class Percolation {
 	private boolean isFull(int unifiedIndex) {
 		return isOpen(unifiedIndex) && this.weightedQuickUnionUF.connected(unifiedIndex,
 				this.virtualTopSiteIndex);
-	}
-	
-	/**
-	 * Does the system percolate?
-	 * @return
-	 */
-	public boolean percolates() {
-		return this.weightedQuickUnionUF.connected(this.virtualTopSiteIndex, 
-				this.virtualBottomSiteIndex);
 	}
 	
 	/**
@@ -125,8 +123,8 @@ public class Percolation {
 		}
 	}
 	
-	private void initWeightedQuickUnion(int N) {
-		int N2 = N * N;
+	private void initWeightedQuickUnion() {
+		int N2 = this.N * this.N;
 		
 		// Determine virtual site indexes.
 		this.virtualTopSiteIndex = N2;
@@ -134,18 +132,6 @@ public class Percolation {
 		
 		// Instantiate the weighted quick union.
 		this.weightedQuickUnionUF = new WeightedQuickUnionUF(N2 + 2);
-		
-		// Set union between virtual and related top sites.
-		int i = 1;
-		for (int j = 1; j <= N; j++) {
-			this.weightedQuickUnionUF.union(this.virtualTopSiteIndex, processUnifiedIndex(i, j));
-		}
-		
-		// Set union between virtual and related bottom sites.
-		i = N;
-		for (int j = 1; j <= N; j++) {
-			this.weightedQuickUnionUF.union(this.virtualBottomSiteIndex, processUnifiedIndex(i, j));
-		}
 	}
 	
 	/**
