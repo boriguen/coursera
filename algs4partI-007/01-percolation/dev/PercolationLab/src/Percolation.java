@@ -1,7 +1,5 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -16,9 +14,10 @@ public class Percolation {
 
     private int N = 0;
     private boolean[] grid = null;
-    private ArrayList<Integer> bottomSiteIndexes = null;
     private int virtualTopSiteIndex = 0;
-    private WeightedQuickUnionUF weightedQuickUnionUF = null;
+    private int virtualBottomSiteIndex = 0;
+    private WeightedQuickUnionUF percolateWeightedQuickUnionUF = null;
+    private WeightedQuickUnionUF fullWeightedQuickUnionUF = null;
 
     /**
      * Creates N-by-N grid, with all sites blocked.
@@ -32,7 +31,7 @@ public class Percolation {
         
         // Store N.
         this.N = N;
-
+        
         // Init blocked/open grid.
         this.grid = new boolean[N * N];
         for (int i = 0; i < this.grid.length; i++) {
@@ -41,10 +40,6 @@ public class Percolation {
 
         // Init the quick union.
         initWeightedQuickUnion();
-        
-        // Init the stack to be used to unify bottom sites with virtual one as soon
-        // as they become full.
-        this.bottomSiteIndexes = new ArrayList<Integer>(N / 2);
     }
     
     /**
@@ -67,7 +62,7 @@ public class Percolation {
                 percolation.open(i, j);
                 
                 percolation.printSystem();
-                //System.out.printf("\n%d. isFull(%d, %d) equals %b", count, i, j, percolation.isFull(i, j));
+                System.out.printf("\n%d. isFull(%d, %d) equals %b", count, i, j, percolation.isFull(i, j));
                 System.out.printf("\n%d. percolates after (%d, %d) equals %b", count, i, j, percolation.percolates());
                 
                 count++;
@@ -96,12 +91,14 @@ public class Percolation {
             trySiteUnion(unifiedIndex, i, j + 1); // Right.
             
             if (i == 1) {
-                this.weightedQuickUnionUF.union(this.virtualTopSiteIndex,
+                this.percolateWeightedQuickUnionUF.union(this.virtualTopSiteIndex,
+                        unifiedIndex);
+                this.fullWeightedQuickUnionUF.union(this.virtualTopSiteIndex,
                         unifiedIndex);
             }
             
             if (i == N) {
-                this.bottomSiteIndexes.add(unifiedIndex);
+                this.percolateWeightedQuickUnionUF.union(unifiedIndex, this.virtualBottomSiteIndex);
             }
         }
     }
@@ -134,11 +131,8 @@ public class Percolation {
      * @return
      */
     public boolean percolates() {
-        boolean percolates = false;
-        for (int i = 0; i < this.bottomSiteIndexes.size() && !percolates; i++) {
-            percolates = this.weightedQuickUnionUF.connected(this.virtualTopSiteIndex,
-                    this.bottomSiteIndexes.get(i)); 
-        }
+        boolean percolates = this.percolateWeightedQuickUnionUF.connected(this.virtualTopSiteIndex, 
+                this.virtualBottomSiteIndex);
         return percolates;
     }
 
@@ -160,7 +154,7 @@ public class Percolation {
      */
     private boolean isFull(int unifiedIndex) {
         return isOpen(unifiedIndex)
-                && this.weightedQuickUnionUF.connected(unifiedIndex,
+                && this.fullWeightedQuickUnionUF.connected(unifiedIndex,
                         this.virtualTopSiteIndex);
     }
 
@@ -180,14 +174,19 @@ public class Percolation {
         }
     }
 
+    /**
+     * Initializes the weighted quick union.
+     */
     private void initWeightedQuickUnion() {
         int N2 = this.N * this.N;
 
         // Determine virtual site index.
         this.virtualTopSiteIndex = N2;
+        this.virtualBottomSiteIndex = N2 + 1;
 
         // Instantiate the weighted quick union.
-        this.weightedQuickUnionUF = new WeightedQuickUnionUF(N2 + 1);
+        this.percolateWeightedQuickUnionUF = new WeightedQuickUnionUF(N2 + 2);
+        this.fullWeightedQuickUnionUF = new WeightedQuickUnionUF(N2 + 1);
     }
 
     /**
@@ -221,7 +220,9 @@ public class Percolation {
         if (i >= 1 && i <= this.N && j >= 1 && j <= this.N) {
             int neighborUnifiedIndex = processUnifiedIndex(i, j);
             if (isOpen(neighborUnifiedIndex)) {
-                this.weightedQuickUnionUF.union(unifiedIndex,
+                this.percolateWeightedQuickUnionUF.union(unifiedIndex,
+                        neighborUnifiedIndex);
+                this.fullWeightedQuickUnionUF.union(unifiedIndex,
                         neighborUnifiedIndex);
                 success = true;
             }

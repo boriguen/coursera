@@ -40,6 +40,8 @@ public class PercolationStats {
             throw new IllegalArgumentException(
                     "The program should only contain N and T");
         }
+        
+        Stopwatch stopWatch = new Stopwatch();
 
         // Compute stats.
         int N = Integer.parseInt(args[0]);
@@ -54,6 +56,8 @@ public class PercolationStats {
         System.out.printf("\n95%% confidence interval = %f, %f",
                 percolationStats.confidenceLo(),
                 percolationStats.confidenceHi());
+        
+        System.out.printf("\nTime for N = %d and T = %d is %f seconds", N, T, stopWatch.elapsedTime());
     }
 
     /**
