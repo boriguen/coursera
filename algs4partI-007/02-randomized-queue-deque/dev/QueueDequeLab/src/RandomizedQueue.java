@@ -105,13 +105,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      */
     public Item dequeue() {
         if (isEmpty()) {
-            throw new NoSuchElementException("The queue is empty.");
+            throw new NoSuchElementException("The queue is empty");
         }
-        StdRandom.shuffle(this.items);
-        Item dequeued = this.items[--this.count];
-        
+        int index = StdRandom.uniform(this.count);
+        Item dequeued = this.items[index];
+        this.items[index] = this.items[--this.count];
         if (size() > 0 && size() == this.items.length / 4) {
-            resize(this.items.length / 2);
+            resize(size() / 2);
         }
         
         return dequeued;
@@ -123,11 +123,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
      */
     public Item sample() {
         if (isEmpty()) {
-            throw new NoSuchElementException("The queue is empty.");
+            throw new NoSuchElementException("The queue is empty");
         }
-        StdRandom.shuffle(this.items);
-        
-        return this.items[this.count - 1];
+        int index = StdRandom.uniform(this.count);
+        return this.items[index];
     }
     
     /**
@@ -145,7 +144,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private void resize(int size) {
         Item[] copy = (Item[]) new Object[size];
         for (int i = 0; i < this.count; i++) {
-            copy[i] = this.items[i];
+            if (this.items[i] != null) {
+                copy[i] = this.items[i];
+            }
         }
         this.items = copy;
     }
