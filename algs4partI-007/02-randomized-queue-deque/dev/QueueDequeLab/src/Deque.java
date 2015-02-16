@@ -132,6 +132,8 @@ public class Deque<Item> implements Iterable<Item> {
         this.head = formerHead.prev;
         if (!isEmpty()) {
             this.head.next = null;
+        } else {
+            this.head = this.tail = null;
         }
         return formerHead.data;
     }
@@ -149,6 +151,8 @@ public class Deque<Item> implements Iterable<Item> {
         this.tail = formerTail.next;
         if (!isEmpty()) {
             this.tail.prev = null;
+        } else {
+            this.tail = this.head = null;
         }
         return formerTail.data;
     }
