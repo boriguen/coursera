@@ -93,8 +93,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (item == null) {
             throw new NullPointerException();
         }
-        if (size() == this.items.length) {
-            resize(size() * 2);
+        if (this.count == this.items.length) {
+            resize(this.items.length * 2);
         }
         this.items[this.count] = item;
         this.count++;
@@ -110,8 +110,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int index = StdRandom.uniform(this.count);
         Item dequeued = this.items[index];
         this.items[index] = this.items[--this.count];
-        if (size() > 0 && size() == this.items.length / 4) {
-            resize(size() / 2);
+        this.items[this.count] = null;
+        if (this.count > 0 && this.count == this.items.length / 4) {
+            resize(this.items.length / 2);
         }
         
         return dequeued;
@@ -144,9 +145,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private void resize(int size) {
         Item[] copy = (Item[]) new Object[size];
         for (int i = 0; i < this.count; i++) {
-            if (this.items[i] != null) {
-                copy[i] = this.items[i];
-            }
+            copy[i] = this.items[i];
         }
         this.items = copy;
     }
