@@ -1,7 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * 
@@ -13,6 +15,8 @@ import java.util.Scanner;
  */
 public class Brute {
 
+	private static final Set<String> lineSegmentKeys = new HashSet<String>();
+	
 	/**
 	 * @param args
 	 * @throws FileNotFoundException 
@@ -24,6 +28,8 @@ public class Brute {
 		
 		Scanner scanner = new Scanner(new File(args[0]));
 		if (scanner.hasNextInt()) {
+			lineSegmentKeys.clear();
+			
 			// Rescale coordinate system.
 			StdDraw.setXscale(0, 32768);
 			StdDraw.setYscale(0, 32768);
@@ -38,29 +44,21 @@ public class Brute {
 			}
 			scanner.close();
 			
-			if (points.length > 1) {
-				if (points.length  == 2) {
-					printDrawOrderedLineSegment(points);
-				} else if (points.length == 3) {
-					if (areSameLineSegmentPoints(points)) {
-						printDrawOrderedLineSegment(points);
-					}
-				} else {
-					// Examine 4 points at a time.
-					for (i = 0; i < points.length - 3; i++) {
-						Point p1 = points[i];
-						for (int j = i + 1; j < points.length - 2; j++) {
-							Point p2 = points[j];
-							for (int k = j + 1; k < points.length - 1; k++) {
-								Point p3 = points[k];
-								for (int l = k + 1; l < points.length; l++) {
-									Point p4 = points[l];
-									Point[] pointsSubset = new Point[]{p1, p2, p3, p4};
-									
-									// If all slopes are equal relative to P1.
-									if (areSameLineSegmentPoints(pointsSubset)) {
-										printDrawOrderedLineSegment(pointsSubset);
-									}
+			if (points.length > 3) {
+				// Examine 4 points at a time.
+				for (i = 0; i < points.length - 3; i++) {
+					Point p1 = points[i];
+					for (int j = i + 1; j < points.length - 2; j++) {
+						Point p2 = points[j];
+						for (int k = j + 1; k < points.length - 1; k++) {
+							Point p3 = points[k];
+							for (int l = k + 1; l < points.length; l++) {
+								Point p4 = points[l];
+								Point[] pointsSubset = new Point[]{p1, p2, p3, p4};
+								
+								// If all slopes are equal relative to P1.
+								if (areSameLineSegmentPoints(pointsSubset)) {
+									printDrawOrderedLineSegment(pointsSubset);
 								}
 							}
 						}
@@ -78,12 +76,16 @@ public class Brute {
 	 */
 	private static void printDrawOrderedLineSegment(Point[] points) {
 		Arrays.sort(points);
-		StringBuilder sb = new StringBuilder(points[0].toString());
-		for (int i = 1; i < points.length; i++) {
-			sb.append(" -> ").append(points[i]);
-			points[i-1].drawTo(points[i]);
+		String key = Arrays.toString(points);
+		if (!lineSegmentKeys.contains(key)) {
+			lineSegmentKeys.add(key);
+			StringBuilder sb = new StringBuilder(points[0].toString());
+			for (int i = 1; i < points.length; i++) {
+				sb.append(" -> ").append(points[i]);
+			}
+			points[0].drawTo(points[points.length - 1]);
+			StdOut.println(sb.toString());
 		}
-		StdOut.println(sb.toString());
 	}
 	
 	/**
