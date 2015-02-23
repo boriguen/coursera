@@ -29,6 +29,12 @@ public class Point implements Comparable<Point> {
 		Point p3 = new Point(3, -8);
 		Point p4 = new Point(3, 7);
 		
+		// Test Double.
+		assert Double.compare(Double.NEGATIVE_INFINITY, -2) == -1;
+		assert Double.compare(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY) == 0;
+		assert Double.compare(Double.POSITIVE_INFINITY, -2) == 1;
+		assert Double.compare(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY) == 0;
+		
 		// Test Comparable.
 		assert p1.compareTo(p2) == 1;
 		assert p2.compareTo(p3) == -1;
@@ -97,7 +103,7 @@ public class Point implements Comparable<Point> {
 		
 		if (this.y < that.y || this.y == that.y && this.x < that.x) {
 			compareTo = -1;
-		} else if (this.x > that.x){
+		} else if (this.y > that.y || this.y == that.y && this.x > that.x){
 			compareTo = 1;
 		}
 		

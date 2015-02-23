@@ -38,21 +38,30 @@ public class Brute {
 			}
 			scanner.close();
 			
-			// Examine 4 points at a time.
-			for (i = 0; i < points.length - 3; i++) {
-				for (int j = i + 1; j < points.length - 2; j++) {
-					for (int k = j + 1; k < points.length - 1; k++) {
-						for (int l = k + 1; l < points.length; l++) {
-							// Retrieve the current 4 points.
-							Point p1 = points[i];
+			if (points.length > 1) {
+				if (points.length  == 2) {
+					printDrawOrderedLineSegment(points);
+				} else if (points.length == 3) {
+					if (areSameLineSegmentPoints(points)) {
+						printDrawOrderedLineSegment(points);
+					}
+				} else {
+					// Examine 4 points at a time.
+					for (i = 0; i < points.length - 3; i++) {
+						Point p1 = points[i];
+						for (int j = i + 1; j < points.length - 2; j++) {
 							Point p2 = points[j];
-							Point p3 = points[k];
-							Point p4 = points[l];
-							Point[] pointsSubset = new Point[]{p1, p2, p3, p4};
-							
-							// If all slopes are equal relative to P1.
-							if (areSameLineSegmentPoints(pointsSubset)) {
-								printDrawOrderedLineSegment(pointsSubset);
+							for (int k = j + 1; k < points.length - 1; k++) {
+								Point p3 = points[k];
+								for (int l = k + 1; l < points.length; l++) {
+									Point p4 = points[l];
+									Point[] pointsSubset = new Point[]{p1, p2, p3, p4};
+									
+									// If all slopes are equal relative to P1.
+									if (areSameLineSegmentPoints(pointsSubset)) {
+										printDrawOrderedLineSegment(pointsSubset);
+									}
+								}
 							}
 						}
 					}
@@ -65,14 +74,14 @@ public class Brute {
 	 * Orders the array according to the position in the slope first and then prints
 	 * the line segment as a string:
 	 * e.g. (10000, 0) -> (7000, 3000) -> (3000, 7000) -> (0, 10000)
-	 * @param unorderedPoints
+	 * @param points
 	 */
-	private static void printDrawOrderedLineSegment(Point[] unorderedPoints) {
-		Arrays.sort(unorderedPoints);
-		StringBuilder sb = new StringBuilder(unorderedPoints[0].toString());
-		for (int i = 1; i < unorderedPoints.length; i++) {
-			sb.append(" -> ").append(unorderedPoints[i]);
-			unorderedPoints[i-1].drawTo(unorderedPoints[i]);
+	private static void printDrawOrderedLineSegment(Point[] points) {
+		Arrays.sort(points);
+		StringBuilder sb = new StringBuilder(points[0].toString());
+		for (int i = 1; i < points.length; i++) {
+			sb.append(" -> ").append(points[i]);
+			points[i-1].drawTo(points[i]);
 		}
 		StdOut.println(sb.toString());
 	}
