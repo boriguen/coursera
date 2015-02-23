@@ -49,7 +49,7 @@ public class Percolation {
     public static void main(String[] args) throws FileNotFoundException {
         if (args.length != 1) {
             throw new IllegalArgumentException(
-                    "The program should only a file name");
+                    "The program should only be a file name");
         }
 
         Scanner scanner = new Scanner(new File(args[0]));
